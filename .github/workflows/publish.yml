@@ -20,11 +20,8 @@ jobs:
 
       - uses: actions/setup-node@v4
         with:
-          node-version: 22
+          node-version: lts/*
           registry-url: https://registry.npmjs.org
-
-      - name: Ensure npm supports trusted publishing
-        run: npm install -g npm@latest
 
       - name: Compute version from tag
         run: |
