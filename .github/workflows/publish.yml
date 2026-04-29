@@ -1,6 +1,14 @@
 name: Publish to npm
 
 on:
+  workflow_call:
+    inputs:
+      tag:
+        required: true
+        type: string
+    secrets:
+      NPM_TOKEN:
+        required: true
   release:
     types: [published]
 
@@ -20,7 +28,7 @@ jobs:
 
       - name: Compute version from tag
         run: |
-          TAG="${{ github.event.release.tag_name }}"
+          TAG="${{ inputs.tag || github.event.release.tag_name }}"
           VERSION="${TAG#v}"
           echo "Publishing version: $VERSION"
           jq --indent 2 --arg v "$VERSION" '.version = $v' package.json > package.json.tmp
