@@ -8,18 +8,4 @@ jobs:
   check-version:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v4
-
-      - name: Validate version format
-        run: |
-          VERSION=$(jq -r '.version' package.json)
-          echo "Version: $VERSION"
-
-          # Base SemVer: MAJOR.MINOR.PATCH
-          # Prerelease: MAJOR.MINOR.PATCH-YYYYMMDD.N (for same-day releases)
-          if ! echo "$VERSION" | grep -qE '^[0-9]+\.[0-9]+\.[0-9]+(-[0-9]{8}\.[0-9]+)?$'; then
-            echo "::error::Version '$VERSION' is not valid (expected MAJOR.MINOR.PATCH or MAJOR.MINOR.PATCH-YYYYMMDD.N, e.g. 1.0.0, 1.0.0-20260429.0)"
-            exit 1
-          fi
-
-          echo "Version format OK: $VERSION"
+      - uses: cad0p/semver-calver-release/validate-version@v1
