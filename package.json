@@ -1,0 +1,24 @@
+{
+  "name": "pi-shipit",
+  "version": "0.1.0",
+  "description": "Quality gates for shipping code with the Pi coding agent. Iterative review loops and fork-to-upstream PR workflows with AI review + CI gating.",
+  "keywords": [
+    "pi-package",
+    "pi-coding-agent",
+    "code-review",
+    "pull-request",
+    "subagents"
+  ],
+  "license": "MIT",
+  "author": "cad0p",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/cad0p/pi-shipit.git"
+  },
+  "pi": {
+    "skills": [
+      "skills/review-fix-loop",
+      "skills/submit-fork-pr"
+    ]
+  }
+}
