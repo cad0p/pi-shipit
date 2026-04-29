@@ -87,5 +87,3 @@ jobs:
     uses: ./.github/workflows/publish.yml
     with:
       tag: v${{ needs.release.outputs.version }}
-    secrets:
-      NPM_TOKEN: ${{ secrets.NPM_TOKEN }}
