@@ -31,6 +31,12 @@ Two-stage fork-to-upstream PR workflow. Create an internal PR on your fork first
 
 ## Install
 
+**Via npm (recommended):**
+```bash
+pi install npm:pi-shipit
+```
+
+**Via git:**
 ```bash
 pi install git:github.com/cad0p/pi-shipit
 ```
