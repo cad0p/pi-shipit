@@ -10,15 +10,15 @@ jobs:
     steps:
       - uses: actions/checkout@v4
 
-      - name: Validate hybrid format
+      - name: Validate version format
         run: |
           VERSION=$(jq -r '.version' package.json)
           echo "Version: $VERSION"
 
-          # Accept base SemVer (MAJOR.MINOR.PATCH) and full hybrid with date
-          # Examples: 1.0.0, 1.0.0.20260429, 1.0.0.20260429.2
-          if ! echo "$VERSION" | grep -qE '^[0-9]+\.[0-9]+\.[0-9]+(\.[0-9]{8}(\.[0-9]+)?)?$'; then
-            echo "::error::Version '$VERSION' is not valid (expected MAJOR.MINOR.PATCH or MAJOR.MINOR.PATCH.YYYYMMDD[.N], e.g. 1.0.0, 1.0.0.20260429, 1.0.0.20260429.2)"
+          # Base SemVer: MAJOR.MINOR.PATCH
+          # Prerelease: MAJOR.MINOR.PATCH-YYYYMMDD.N (for same-day releases)
+          if ! echo "$VERSION" | grep -qE '^[0-9]+\.[0-9]+\.[0-9]+(-[0-9]{8}\.[0-9]+)?$'; then
+            echo "::error::Version '$VERSION' is not valid (expected MAJOR.MINOR.PATCH or MAJOR.MINOR.PATCH-YYYYMMDD.N, e.g. 1.0.0, 1.0.0-20260429.0)"
             exit 1
           fi
 

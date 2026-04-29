@@ -45,16 +45,21 @@ jobs:
           PATCH=$(echo "$BASE" | cut -d. -f3)
           TODAY=$(date -u +%Y%m%d)
 
-          CANDIDATE="$MAJOR.$MINOR.$PATCH.$TODAY"
+          BASE_VERSION="$MAJOR.$MINOR.$PATCH"
 
-          if git tag -l "v$CANDIDATE" | grep -q .; then
-            SUFFIX=2
-            while git tag -l "v$CANDIDATE.$SUFFIX" | grep -q .; do
-              SUFFIX=$((SUFFIX + 1))
-            done
-            VERSION="$CANDIDATE.$SUFFIX"
+          if ! git tag -l "v$BASE_VERSION" | grep -q .; then
+            VERSION="$BASE_VERSION"
           else
-            VERSION="$CANDIDATE"
+            CANDIDATE="$BASE_VERSION-$TODAY"
+            if git tag -l "v$CANDIDATE.0" | grep -q .; then
+              SUFFIX=1
+              while git tag -l "v$CANDIDATE.$SUFFIX" | grep -q .; do
+                SUFFIX=$((SUFFIX + 1))
+              done
+              VERSION="$CANDIDATE.$SUFFIX"
+            else
+              VERSION="$CANDIDATE.0"
+            fi
           fi
 
           echo "version=$VERSION" >> "$GITHUB_OUTPUT"
