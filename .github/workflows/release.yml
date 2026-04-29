@@ -61,7 +61,7 @@ jobs:
       - name: Tag and release
         if: steps.changes.outputs.has_changes == 'true'
         env:
-          GH_TOKEN: ${{ github.token }}
+          GH_TOKEN: ${{ secrets.GH_PAT }}
         run: |
           VERSION="${{ steps.version.outputs.version }}"
           TAG="v$VERSION"
