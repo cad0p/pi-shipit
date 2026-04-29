@@ -12,78 +12,20 @@ jobs:
   release:
     runs-on: ubuntu-latest
     outputs:
-      version: ${{ steps.version.outputs.version }}
-      has_changes: ${{ steps.changes.outputs.has_changes }}
+      version: ${{ steps.release.outputs.version }}
+      has_changes: ${{ steps.release.outputs.has_changes }}
     steps:
-      - uses: actions/checkout@v4
-        with:
-          fetch-depth: 0
-
-      - name: Check for code changes since last tag
-        id: changes
-        run: |
-          LAST_TAG=$(git describe --tags --abbrev=0 2>/dev/null || echo "")
-          if [ -z "$LAST_TAG" ]; then
-            echo "has_changes=true" >> "$GITHUB_OUTPUT"
-          else
-            CHANGED=$(git diff --name-only "$LAST_TAG" HEAD | grep -v -E '^(README\.md|CHANGELOG\.md|\.github/|docs/)' || true)
-            if [ -n "$CHANGED" ]; then
-              echo "has_changes=true" >> "$GITHUB_OUTPUT"
-            else
-              echo "has_changes=false" >> "$GITHUB_OUTPUT"
-            fi
-          fi
-
-      - name: Compute hybrid version
-        id: version
-        if: steps.changes.outputs.has_changes == 'true'
-        run: |
-          CURRENT=$(jq -r '.version' package.json)
-          BASE=$(echo "$CURRENT" | grep -oE '^[0-9]+\.[0-9]+\.[0-9]+')
-          MAJOR=$(echo "$BASE" | cut -d. -f1)
-          MINOR=$(echo "$BASE" | cut -d. -f2)
-          PATCH=$(echo "$BASE" | cut -d. -f3)
-          TODAY=$(date -u +%Y%m%d)
-
-          BASE_VERSION="$MAJOR.$MINOR.$PATCH"
-
-          if ! git tag -l "v$BASE_VERSION" | grep -q .; then
-            VERSION="$BASE_VERSION"
-          else
-            CANDIDATE="$BASE_VERSION-$TODAY"
-            if git tag -l "v$CANDIDATE.0" | grep -q .; then
-              SUFFIX=1
-              while git tag -l "v$CANDIDATE.$SUFFIX" | grep -q .; do
-                SUFFIX=$((SUFFIX + 1))
-              done
-              VERSION="$CANDIDATE.$SUFFIX"
-            else
-              VERSION="$CANDIDATE.0"
-            fi
-          fi
-
-          echo "version=$VERSION" >> "$GITHUB_OUTPUT"
-          echo "Computed version: $VERSION"
-
-      - name: Tag and release
-        if: steps.changes.outputs.has_changes == 'true'
-        env:
-          GH_TOKEN: ${{ github.token }}
-        run: |
-          VERSION="${{ steps.version.outputs.version }}"
-          TAG="v$VERSION"
-
-          git tag "$TAG"
-          git push origin "$TAG"
-
-          gh release create "$TAG" \
-            --title "$TAG" \
-            --generate-notes \
-            --latest
+      - id: release
+        uses: cad0p/semver-calver-release/release@v1
 
   publish:
     needs: release
     if: needs.release.outputs.has_changes == 'true'
-    uses: ./.github/workflows/publish.yml
-    with:
-      tag: v${{ needs.release.outputs.version }}
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      id-token: write
+    steps:
+      - uses: cad0p/semver-calver-release/npm-publish@v1
+        with:
+          tag: v${{ needs.release.outputs.version }}
