@@ -1,6 +1,6 @@
 {
   "name": "pi-shipit",
-  "version": "1.0.0.20260429",
+  "version": "1.0.0",
   "description": "Quality gates for shipping code with the Pi coding agent. Iterative review loops and fork-to-upstream PR workflows with AI review + CI gating.",
   "keywords": [
     "pi-package",
