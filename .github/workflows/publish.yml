@@ -6,9 +6,6 @@ on:
       tag:
         required: true
         type: string
-    secrets:
-      NPM_TOKEN:
-        required: true
   release:
     types: [published]
 
@@ -33,10 +30,7 @@ jobs:
           echo "Publishing version: $VERSION"
           jq --indent 2 --arg v "$VERSION" '.version = $v' package.json > package.json.tmp
           mv package.json.tmp package.json
-          cat package.json | grep '"version"'
 
       - run: npm install
 
-      - run: npm publish --access public --provenance
-        env:
-          NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
+      - run: npm publish --access public
